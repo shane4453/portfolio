@@ -55,7 +55,8 @@ for (const e of list) {
   const sig = `${st.size}:${st.mtimeMs}`;
   let c = cache[src];
   if (!c || c.sig !== sig || !fs.existsSync(path.join(ENC, c.id + '.bin'))) {
-    const id = b64(crypto.getRandomValues(new Uint8Array(9))).replace(/\+/g, '-').replace(/\//g, '_');
+    // 영숫자만: GitHub Pages(Jekyll)는 _ 로 시작하는 파일을 빼고 올린다 (Look at You Like That 이 404 났던 이유)
+    const id = Buffer.from(crypto.getRandomValues(new Uint8Array(9))).toString('hex');
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, fs.readFileSync(src)));
     const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12);
