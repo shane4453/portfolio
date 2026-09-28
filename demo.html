@@ -142,7 +142,7 @@ function render(items){
 
 $('#gate').addEventListener('submit',async e=>{
   e.preventDefault();
-  if(!MAN) return;
+  if(!MAN||$('#gate').dataset.busy) return; $('#gate').dataset.busy=1;
   const btn=$('#gate button'); btn.disabled=true; $('#msg').textContent='Checking…';
   try{
     const key=await derive($('#pw').value);
@@ -151,7 +151,7 @@ $('#gate').addEventListener('submit',async e=>{
   }catch{
     $('#msg').textContent='Incorrect password.'; $('#pw').select();
   }
-  btn.disabled=false;
+  btn.disabled=false; delete $('#gate').dataset.busy;
 });
 </script>
 </body>

@@ -185,3 +185,17 @@ nav.subtabs .n{font-family:var(--sans);font-size:13px;vertical-align:super;margi
 .contact-line span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:6px}
 .contact-line a{border-bottom:1px solid var(--line)}
 .contact-line a:hover{border-bottom-color:var(--fg)}
+
+/* 연락처의 잠긴 전화번호 */
+.phone-gate{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:22px;font-size:15px}
+.phone-gate .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);min-width:52px}
+.phone-gate .lock{display:inline-flex;gap:8px}
+.phone-gate .lock[hidden]{display:none}
+.phone-gate input{width:170px;padding:9px 14px;font:inherit;font-size:15px;color:var(--fg);background:transparent;
+  border:1px solid var(--line);border-radius:999px}
+.phone-gate input:focus{outline:none;border-color:var(--fg)}
+.phone-gate button{padding:9px 16px;font:inherit;font-size:14px;font-weight:600;border:1px solid var(--fg);border-radius:999px;
+  background:var(--fg);color:var(--bg);cursor:pointer}
+.phone-gate .num{font-size:18px;border-bottom:1px solid var(--line)}
+.phone-gate .num:hover{border-bottom-color:var(--fg)}
+.phone-gate .msg{font-size:13px;color:var(--muted)}

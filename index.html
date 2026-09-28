@@ -126,6 +126,15 @@
     <div class="links">
       <a href="https://www.instagram.com/shan___ee/" target="_blank" rel="noopener">Instagram</a>
     </div>
+    <form class="phone-gate" id="phone-gate">
+      <span class="k">Phone</span>
+      <span class="lock">
+        <input id="phone-pw" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password" required>
+        <button type="submit">Show</button>
+      </span>
+      <a class="num" hidden></a>
+      <span class="msg" aria-live="polite"></span>
+    </form>
   </div>
   <div class="photo rise"><img src="img/standing.jpg" alt="Shane" loading="lazy"></div>
 </section>
@@ -156,6 +165,34 @@ const nio=new IntersectionObserver(es=>es.forEach(e=>{
   if(e.isIntersecting) navs.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
 }),{rootMargin:'-45% 0px -50% 0px'});
 ['top','credits','videos','contact'].forEach(id=>nio.observe(document.getElementById(id)));
+
+// 전화번호는 데모와 같은 매니페스트에 잠겨 있다 — 데모 비밀번호로 푼다 (demo.html 과 같은 키, 같은 탭이면 공유)
+(()=>{
+  const form=document.getElementById('phone-gate'), msg=form.querySelector('.msg'), num=form.querySelector('.num');
+  const unb64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0)), b64=u=>btoa(String.fromCharCode(...u));
+  let MAN=null;
+  const show=async key=>{
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(MAN.iv)},key,unb64(MAN.ct));
+    const d=JSON.parse(new TextDecoder().decode(plain)), phone=d&&d.contact&&d.contact.phone;
+    if(!phone) throw 0;
+    num.textContent=phone; num.href='tel:'+phone.replace(/[^0-9+]/g,''); num.hidden=false;
+    form.querySelector('.lock').hidden=true; msg.textContent='';
+  };
+  const load=async()=>MAN||(MAN=await (await fetch('demos/manifest.json',{cache:'no-store'})).json());
+  (async()=>{ try{ const k=sessionStorage.getItem('demoKey'); if(k){ await load(); await show(await crypto.subtle.importKey('raw',unb64(k),'AES-GCM',true,['decrypt'])) } }catch{} })();
+  form.addEventListener('submit',async e=>{
+    e.preventDefault(); if(form.dataset.busy) return; form.dataset.busy=1;
+    const btn=form.querySelector('button'); btn.disabled=true; msg.textContent='Checking…';
+    try{
+      await load();
+      const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(document.getElementById('phone-pw').value),'PBKDF2',false,['deriveKey']);
+      const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(MAN.salt),iterations:MAN.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},true,['decrypt']);
+      await show(key);
+      try{ sessionStorage.setItem('demoKey',b64(new Uint8Array(await crypto.subtle.exportKey('raw',key)))) }catch{}
+    }catch{ msg.textContent='Incorrect password.'; document.getElementById('phone-pw').select() }
+    btn.disabled=false; delete form.dataset.busy;
+  });
+})();
 
 // 스크롤로 들어올 때 살짝 떠오르게
 const rio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
