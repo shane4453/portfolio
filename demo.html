@@ -3,32 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shane — 데모</title>
+<title>Shane — Demos</title>
 <!-- 미발매 데모라 검색엔진에는 안 올린다 -->
 <meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main>
-
-<header class="mini" style="display:flex">
-  <img src="img/4.jpg" alt="Shane 프로필 사진">
-  <div>
-    <h1>Shane</h1>
-    <p>작곡 · 편곡 · 프로듀싱 · 기타</p>
-  </div>
+<header class="top">
+  <a class="mark" href="index.html">Shane</a>
+  <nav>
+    <a href="index.html#credits">Credits</a>
+    <a href="index.html#videos">Videos</a>
+    <a href="demo.html" class="on">Demos</a>
+    <a href="index.html#contact">Contact</a>
+  </nav>
 </header>
 
-<nav class="tabs">
-  <a href="index.html#credits">크레딧</a>
-  <a href="index.html#videos">영상</a>
-  <a href="index.html#history">이력</a>
-  <a href="demo.html" class="on">데모</a>
-</nav>
+<main class="demo-page">
+<h1>Demos</h1>
+<p class="lead">미발매 데모입니다. 비밀번호를 받은 분만 들을 수 있습니다.</p>
 
 <form id="gate" class="gate">
-  <p>데모는 비밀번호를 받은 분만 들을 수 있습니다.</p>
   <div class="row">
     <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" required>
     <button type="submit">확인</button>
@@ -38,15 +36,15 @@
 
 <div id="body" hidden>
   <nav class="subtabs">
-    <a href="#track" data-cat="track">트랙 데모 <span class="n"></span></a>
-    <a href="#full" data-cat="full">풀 데모 <span class="n"></span></a>
+    <a href="#track" data-cat="track">Track Demo <span class="n"></span></a>
+    <a href="#full" data-cat="full">Full Demo <span class="n"></span></a>
   </nav>
   <section class="tab" id="track"><div class="list"></div></section>
   <section class="tab" id="full" hidden><div class="list"></div></section>
 </div>
 
-<footer>© Shane</footer>
 </main>
+<footer><span>© Shane</span><span>prodshane.com</span></footer>
 
 <script>
 // 곡과 제목 목록은 전부 잠겨 있다 (build_demos.mjs). 비번 → PBKDF2 → AES-GCM 키로 여기서 푼다.
@@ -83,7 +81,7 @@ function render(items){
   ['track','full'].forEach(cat=>{
     const mine=items.filter(d=>d.cat===cat);
     document.querySelector(`nav.subtabs a[data-cat=${cat}] .n`).textContent=mine.length;
-    const box=document.querySelector('#'+cat+' .list');
+    const box=document.querySelector('#'+cat+' .list'); box.innerHTML='';
     if(!mine.length){box.innerHTML='<p class="empty">데모 준비 중입니다.</p>';return}
     mine.forEach(d=>{
       const el=document.createElement('div'); el.className='demo';
@@ -102,7 +100,7 @@ function render(items){
           if(lastUrl){const old=document.querySelector('audio[data-url="'+lastUrl+'"]'); if(old){old.pause(); old.closest('.demo').querySelector('.play').textContent='▶'; old.remove()} URL.revokeObjectURL(lastUrl)}
           lastUrl=URL.createObjectURL(new Blob([mp3],{type:'audio/mpeg'}));
           a=document.createElement('audio'); a.controls=true; a.src=lastUrl; a.dataset.url=lastUrl;
-          a.addEventListener('play',()=>btn.textContent='❚❚'); a.addEventListener('pause',()=>btn.textContent='▶');
+          a.addEventListener('play',()=>{btn.textContent='❚❚';el.classList.add('playing')}); a.addEventListener('pause',()=>{btn.textContent='▶';el.classList.remove('playing')});
           el.querySelector('.info').appendChild(a); a.play();
         }catch(e){btn.textContent='!'; console.error(e)}
         btn.disabled=false;
