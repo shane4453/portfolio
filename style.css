@@ -1,0 +1,112 @@
+:root{
+  --bg:#fafaf8; --fg:#16161a; --muted:#6b6b73; --line:#e4e4e0; --accent:#c2410c; --card:#ffffff;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#111113; --fg:#ececef; --muted:#9a9aa3; --line:#2a2a2f; --accent:#fb923c; --card:#18181b; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+main{max-width:820px;margin:0 auto;padding:56px 20px 80px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+img{display:block;max-width:100%}
+
+header{display:grid;grid-template-columns:260px 1fr;gap:36px;align-items:end}
+header .photo{border-radius:10px;overflow:hidden;aspect-ratio:4/5}
+header .photo img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+header h1{font-size:44px;letter-spacing:-.02em;margin:0 0 2px;line-height:1.1}
+header .role{font-size:17px;color:var(--muted);margin:0}
+header .intro{margin:20px 0 0;font-size:16px}
+.contact{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:18px;font-size:15px}
+
+section{margin-top:60px}
+h2{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+
+.credit{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.credit .song{font-weight:600;font-size:17px}
+.credit .artist{grid-column:1;color:var(--muted);font-size:14px}
+.credit .part{grid-row:1/3;grid-column:2;align-self:center;font-size:14px;white-space:nowrap}
+.plain{padding-left:18px;margin:0}
+.plain li{margin:6px 0}
+
+.videos{display:grid;grid-template-columns:1fr 1fr;gap:24px 20px}
+.video .frame{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#000;cursor:pointer}
+.video .frame img{width:100%;height:100%;object-fit:cover;opacity:.9;transition:opacity .15s}
+.video .frame:hover img{opacity:1}
+.video .frame::after{content:"";position:absolute;left:50%;top:50%;width:64px;height:44px;margin:-22px 0 0 -32px;
+  border-radius:12px;background:rgba(0,0,0,.72) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/26px no-repeat}
+.video .frame.on::after{display:none}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .cap{margin-top:8px;font-size:14px}
+.video .cap b{font-weight:600}
+.video .cap span{color:var(--muted)}
+
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gallery img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.gallery .wide{grid-column:1/3;aspect-ratio:3/2}
+.gallery .tall{aspect-ratio:2/3}
+
+footer{margin-top:64px;color:var(--muted);font-size:13px}
+
+@media (max-width:640px){
+  header{grid-template-columns:1fr;gap:24px}
+  header .photo{max-width:320px}
+  header h1{font-size:36px}
+  .videos{grid-template-columns:1fr}
+  .credit{grid-template-columns:1fr}
+  .credit .part{grid-row:auto;grid-column:1;color:var(--accent)}
+}
+@media print{
+  :root{--bg:#fff;--fg:#000;--muted:#555;--line:#ddd;--accent:#000}
+  main{padding:0}
+  section{margin-top:28px;break-inside:avoid}
+  .gallery,.videos .frame{display:none}
+}
+
+/* 카테고리 탭 */
+nav.tabs{display:flex;gap:4px;margin-top:40px;border-bottom:1px solid var(--line);overflow-x:auto;
+  position:sticky;top:0;background:var(--bg);z-index:5}
+nav.tabs a{padding:12px 16px;font-size:15px;font-weight:600;color:var(--muted);white-space:nowrap;
+  border-bottom:2px solid transparent;margin-bottom:-1px}
+nav.tabs a:hover{color:var(--fg);text-decoration:none}
+nav.tabs a.on{color:var(--fg);border-bottom-color:var(--accent)}
+.tab{margin-top:28px}
+.tab[hidden]{display:none}
+.tab h2{display:none}
+
+/* 데모 */
+.demo{padding:18px 0;border-bottom:1px solid var(--line)}
+.demo .t{font-weight:600;font-size:17px}
+.demo .m{color:var(--muted);font-size:14px;margin-top:2px}
+.demo audio{width:100%;margin-top:10px}
+.empty{color:var(--muted);padding:24px 0}
+.mini{display:flex;align-items:center;gap:14px}
+.mini img{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:50% 20%}
+.mini h1{font-size:28px;margin:0}
+.mini p{margin:0;color:var(--muted);font-size:14px}
+@media print{ nav.tabs{display:none} .tab[hidden]{display:block} .tab h2{display:block} }
+
+/* 데모 하위 구분 */
+nav.subtabs{display:flex;gap:8px;margin-top:24px}
+nav.subtabs a{padding:7px 16px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;color:var(--muted)}
+nav.subtabs a:hover{color:var(--fg);text-decoration:none}
+nav.subtabs a.on{color:var(--bg);background:var(--fg);border-color:var(--fg)}
+
+/* 데모 잠금 */
+.gate{margin-top:32px;max-width:420px}
+.gate p{margin:0 0 12px;color:var(--muted);font-size:15px}
+.gate .row{display:flex;gap:8px}
+.gate input{flex:1;min-width:0;padding:11px 14px;font:inherit;font-size:16px;color:var(--fg);background:var(--card);
+  border:1px solid var(--line);border-radius:8px}
+.gate input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.gate button{padding:11px 20px;font:inherit;font-weight:600;border:0;border-radius:8px;background:var(--fg);color:var(--bg);cursor:pointer}
+.gate .msg{margin-top:10px;min-height:1.4em;color:var(--accent)}
+.demo{display:flex;gap:14px;align-items:flex-start}
+.demo .info{flex:1;min-width:0}
+.demo .play{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+  color:var(--fg);font-size:14px;cursor:pointer}
+.demo .play:hover{border-color:var(--fg)}
+nav.subtabs .n{font-weight:400;opacity:.6;margin-left:2px}

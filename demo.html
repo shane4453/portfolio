@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shane — 데모</title>
+<!-- 미발매 데모라 검색엔진에는 안 올린다 -->
+<meta name="robots" content="noindex, nofollow">
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+
+<header class="mini" style="display:flex">
+  <img src="img/4.jpg" alt="Shane 프로필 사진">
+  <div>
+    <h1>Shane</h1>
+    <p>작곡 · 편곡 · 프로듀싱 · 기타</p>
+  </div>
+</header>
+
+<nav class="tabs">
+  <a href="index.html#credits">크레딧</a>
+  <a href="index.html#videos">영상</a>
+  <a href="index.html#history">이력</a>
+  <a href="demo.html" class="on">데모</a>
+</nav>
+
+<form id="gate" class="gate">
+  <p>데모는 비밀번호를 받은 분만 들을 수 있습니다.</p>
+  <div class="row">
+    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" required>
+    <button type="submit">확인</button>
+  </div>
+  <p id="msg" class="msg" aria-live="polite"></p>
+</form>
+
+<div id="body" hidden>
+  <nav class="subtabs">
+    <a href="#track" data-cat="track">트랙 데모 <span class="n"></span></a>
+    <a href="#full" data-cat="full">풀 데모 <span class="n"></span></a>
+  </nav>
+  <section class="tab" id="track"><div class="list"></div></section>
+  <section class="tab" id="full" hidden><div class="list"></div></section>
+</div>
+
+<footer>© Shane</footer>
+</main>
+
+<script>
+// 곡과 제목 목록은 전부 잠겨 있다 (build_demos.mjs). 비번 → PBKDF2 → AES-GCM 키로 여기서 푼다.
+const $=s=>document.querySelector(s);
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const b64=u=>btoa(String.fromCharCode(...u));
+let KEY=null, MAN=null;
+
+async function derive(pw){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(MAN.salt),iterations:MAN.iter,hash:'SHA-256'},
+    base,{name:'AES-GCM',length:256},true,['decrypt']);
+}
+async function openWith(key){
+  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(MAN.iv)},key,unb64(MAN.ct));
+  KEY=key; render(JSON.parse(new TextDecoder().decode(plain)));
+}
+
+// 트랙/풀 전환: 주소의 #track / #full
+function showCat(){
+  const want=location.hash.slice(1)==='full'?'full':'track';
+  document.querySelectorAll('section.tab').forEach(t=>t.hidden=(t.id!==want));
+  document.querySelectorAll('nav.subtabs a').forEach(a=>a.classList.toggle('on',a.dataset.cat===want));
+  document.querySelectorAll('audio').forEach(x=>x.pause());
+}
+addEventListener('hashchange',showCat);
+document.querySelectorAll('nav.subtabs a').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault(); history.replaceState(null,'','#'+a.dataset.cat); showCat();
+}));
+
+let lastUrl=null;
+function render(items){
+  $('#gate').hidden=true; $('#body').hidden=false;
+  ['track','full'].forEach(cat=>{
+    const mine=items.filter(d=>d.cat===cat);
+    document.querySelector(`nav.subtabs a[data-cat=${cat}] .n`).textContent=mine.length;
+    const box=document.querySelector('#'+cat+' .list');
+    if(!mine.length){box.innerHTML='<p class="empty">데모 준비 중입니다.</p>';return}
+    mine.forEach(d=>{
+      const el=document.createElement('div'); el.className='demo';
+      el.innerHTML='<button class="play" aria-label="재생">▶</button><div class="info"><div class="t"></div><div class="m"></div></div>';
+      el.querySelector('.t').textContent=d.title;
+      el.querySelector('.m').textContent=d.note;
+      const btn=el.querySelector('.play');
+      btn.addEventListener('click',async()=>{
+        let a=el.querySelector('audio');
+        if(a){a.paused?a.play():a.pause();return}
+        btn.textContent='…'; btn.disabled=true;
+        try{
+          const buf=new Uint8Array(await (await fetch('demos/enc/'+d.id+'.bin')).arrayBuffer());
+          const mp3=await crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(0,12)},KEY,buf.slice(12));
+          // 메모리: 앞서 연 곡은 닫는다
+          if(lastUrl){const old=document.querySelector('audio[data-url="'+lastUrl+'"]'); if(old){old.pause(); old.closest('.demo').querySelector('.play').textContent='▶'; old.remove()} URL.revokeObjectURL(lastUrl)}
+          lastUrl=URL.createObjectURL(new Blob([mp3],{type:'audio/mpeg'}));
+          a=document.createElement('audio'); a.controls=true; a.src=lastUrl; a.dataset.url=lastUrl;
+          a.addEventListener('play',()=>btn.textContent='❚❚'); a.addEventListener('pause',()=>btn.textContent='▶');
+          el.querySelector('.info').appendChild(a); a.play();
+        }catch(e){btn.textContent='!'; console.error(e)}
+        btn.disabled=false;
+      });
+      box.appendChild(el);
+    });
+  });
+  // 하나 틀면 나머지는 멈춘다
+  document.addEventListener('play',e=>document.querySelectorAll('audio').forEach(x=>{if(x!==e.target)x.pause()}),true);
+  showCat();
+}
+
+(async()=>{
+  try{ MAN=await (await fetch('demos/manifest.json',{cache:'no-store'})).json() }
+  catch{ $('#msg').textContent='데모 준비 중입니다.'; $('#gate .row').hidden=true; return }
+  // 같은 탭에서 새로고침하면 다시 묻지 않는다 (탭을 닫으면 잊는다)
+  try{
+    const saved=sessionStorage.getItem('demoKey');
+    if(saved){ await openWith(await crypto.subtle.importKey('raw',unb64(saved),'AES-GCM',true,['decrypt'])); return }
+  }catch{ try{sessionStorage.removeItem('demoKey')}catch{} }
+  $('#pw').focus();
+})();
+
+$('#gate').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!MAN) return;
+  const btn=$('#gate button'); btn.disabled=true; $('#msg').textContent='확인 중…';
+  try{
+    const key=await derive($('#pw').value);
+    await openWith(key);
+    try{ sessionStorage.setItem('demoKey',b64(new Uint8Array(await crypto.subtle.exportKey('raw',key)))) }catch{}
+  }catch{
+    $('#msg').textContent='비밀번호가 맞지 않습니다.'; $('#pw').select();
+  }
+  btn.disabled=false;
+});
+</script>
+</body>
+</html>

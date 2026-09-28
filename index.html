@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shane — 작곡·편곡 포트폴리오</title>
+<meta name="description" content="작곡가·프로듀서 Shane 포트폴리오. The Rose, TNX(P NATION), MIUSA, 우진영 작·편곡 참여.">
+<meta property="og:title" content="Shane — 작곡·편곡 포트폴리오">
+<meta property="og:description" content="The Rose, TNX(P NATION), MIUSA, 우진영 작·편곡 참여">
+<meta property="og:image" content="img/4.jpg">
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+
+<header>
+  <div class="photo"><img src="img/4.jpg" alt="Shane 프로필 사진"></div>
+  <div>
+    <h1>Shane</h1>
+    <p class="role">작곡 · 편곡 · 프로듀싱 · 기타</p>
+    <p class="intro">K-pop · Pop<br>The Rose · TNX (P NATION) · MIUSA · <span style="white-space:nowrap">우진영 작곡·편곡 참여</span></p>
+    <div class="contact">
+      <a href="mailto:julee209@naver.com">julee209@naver.com</a>
+      <a href="https://www.instagram.com/shan___ee/" target="_blank" rel="noopener">Instagram @shan___ee</a>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <a href="#credits" data-tab="credits">크레딧</a>
+  <a href="#videos" data-tab="videos">영상</a>
+  <a href="#history" data-tab="history">이력</a>
+  <a href="demo.html">데모</a>
+</nav>
+
+<section class="tab" id="credits">
+  <h2>발매 크레딧</h2>
+  <div class="credit"><span class="song">Walking On Clouds</span><span class="part">작곡</span>
+    <span class="artist">The Rose — 〈ROSE〉 2번 트랙</span></div>
+  <div class="credit"><span class="song">그러니까 내 말은</span><span class="part">작곡 · 편곡 · 기타</span>
+    <span class="artist">TNX (P NATION) — 〈CALL ME BACK〉 2번 트랙</span></div>
+  <div class="credit"><span class="song">WHY AM I</span><span class="part">작곡 · 기타</span>
+    <span class="artist">TNX 천준혁</span></div>
+  <div class="credit"><span class="song">Inhale</span><span class="part">작곡 · 기타</span>
+    <span class="artist">TNX 최태훈 — Identity Film</span></div>
+  <div class="credit"><span class="song">My Answer (我的答案)</span><span class="part">작곡 · 편곡</span>
+    <span class="artist">MIUSA</span></div>
+  <div class="credit"><span class="song">How are you doing — 1, 2, 5번 트랙</span><span class="part">작곡 · 편곡 · 기타</span>
+    <span class="artist">우진영 EP</span></div>
+  <div class="credit"><span class="song">Don't Worry Be Happy — 1, 2, 3번 트랙</span><span class="part">작곡 · 편곡 · 기타</span>
+    <span class="artist">우진영 EP</span></div>
+</section>
+
+<section class="tab" id="videos" hidden>
+  <h2>영상</h2>
+  <div class="videos">
+    <div class="video"><div class="frame" data-id="-tjnA7E4sQk"></div>
+      <div class="cap"><b>Walking On Clouds</b> <span>— The Rose · 작곡</span></div></div>
+    <div class="video"><div class="frame" data-id="C56sIQSguGI"></div>
+      <div class="cap"><b>WHY AM I</b> <span>— TNX 천준혁 · 작곡, 기타</span></div></div>
+    <div class="video"><div class="frame" data-id="mhNrbB0kzbM"></div>
+      <div class="cap"><b>Inhale</b> <span>— TNX 최태훈 · 작곡, 기타</span></div></div>
+    <div class="video"><div class="frame" data-id="XUOkXfaaP74"></div>
+      <div class="cap"><b>My Answer (我的答案)</b> <span>— MIUSA · 작곡, 편곡</span></div></div>
+    <div class="video"><div class="frame" data-id="cmM_rCPIsl4" data-list="OLAK5uy_neW_84X8WNcs-wZmBgU--5ZefIkjXr0Bw"></div>
+      <div class="cap"><b>Yesterday</b> <span>— 우진영 · 작곡, 편곡, 기타</span></div></div>
+    <div class="video"><div class="frame" data-id="hunedQki3Yk"></div>
+      <div class="cap"><b>재밌잖아</b> <span>— 우진영 · 작곡, 편곡, 기타</span></div></div>
+    <div class="video"><div class="frame" data-id="9781gxVzXvU"></div>
+      <div class="cap"><b>망중한(忙中閑)</b> <span>— 단편영화 BGM</span></div></div>
+  </div>
+</section>
+
+<section class="tab" id="history" hidden>
+  <h2>이력</h2>
+  <ul class="plain">
+    <li>단편 〈망중한〉 BGM — 2026 International Motor Film Awards, Best Drama Short 노미네이트</li>
+  </ul>
+</section>
+
+<footer>© Shane</footer>
+</main>
+
+<script>
+// 카테고리 탭: 주소의 #이름으로 고른다 (링크로 특정 탭을 바로 열 수 있게)
+function showTab(){
+  const want=location.hash.slice(1);
+  const tabs=[...document.querySelectorAll('.tab')];
+  const cur=tabs.find(t=>t.id===want)||tabs[0];
+  tabs.forEach(t=>t.hidden=(t!==cur));
+  document.querySelectorAll('nav.tabs a[data-tab]').forEach(a=>a.classList.toggle('on',a.dataset.tab===cur.id));
+}
+addEventListener('hashchange',showTab); showTab();
+document.querySelectorAll('nav.tabs a[data-tab]').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault(); history.replaceState(null,'','#'+a.dataset.tab); showTab();
+}));
+
+// 썸네일만 먼저 깔고, 누르면 그 자리에서 유튜브 플레이어로 바꾼다
+document.querySelectorAll('.frame').forEach(f=>{
+  const id=f.dataset.id;
+  const img=document.createElement('img');
+  img.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg'; img.alt=''; img.loading='lazy';
+  f.appendChild(img);
+  f.addEventListener('click',()=>{
+    if(f.classList.contains('on')) return;
+    const list=f.dataset.list?'&list='+f.dataset.list:'';
+    f.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1'+list+'" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+    f.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>
