@@ -80,4 +80,4 @@ fs.writeFileSync(MANIFEST, JSON.stringify({ v: 1, iter: ITER, salt: b64(salt), i
 fs.writeFileSync(CACHE, JSON.stringify(newCache, null, 1));
 
 const n = c => items.filter(i => i.cat === c).length;
-console.log(`트랙 ${n('track')} · 풀 ${n('full')} 곡 — 새로 잠근 것 ${redone}`);
+console.log(`트랙 ${n('track')} · 풀 ${n('full')} · R&B ${n('rnb')} 곡 — 새로 잠근 것 ${redone}`);
