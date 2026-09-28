@@ -148,3 +148,35 @@ nav.subtabs .n{font-family:var(--sans);font-size:13px;vertical-align:super;margi
   .hero{min-height:auto;padding-top:0}
   .rise{opacity:1!important;transform:none!important}
 }
+
+/* 사진 활용 */
+.studio{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin:clamp(72px,10vw,140px) var(--pad) 0;
+  height:clamp(300px,42vw,640px)}
+.studio img{width:100%;height:100%;object-fit:cover}
+.studio .w{object-position:50% 40%}
+.studio .n{object-position:50% 35%}
+
+.demo-band{position:relative;overflow:hidden;isolation:isolate;min-height:clamp(320px,36vw,520px)}
+.demo-band .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 40%;z-index:-2}
+.demo-band::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(14,13,12,.94) 0%,rgba(14,13,12,.82) 42%,rgba(14,13,12,.35) 100%)}
+.demo-band p{color:#d4cfc6}
+
+.contact{display:grid;grid-template-columns:1fr minmax(260px,32%);gap:var(--pad);align-items:end}
+.contact .photo{aspect-ratio:2/3;overflow:hidden;background:#e9e7e2}
+.contact .photo img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}
+
+.demo-page{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,30%);gap:var(--pad);max-width:none;align-items:start}
+.demo-photo{position:sticky;top:100px}
+.demo-photo img{width:100%;aspect-ratio:2/3;object-fit:cover;object-position:50% 30%}
+
+@media (max-width:900px){
+  .studio{grid-template-columns:1fr;height:auto}
+  .studio img{height:auto;aspect-ratio:3/2}
+  .studio .n{display:none}
+  .contact{grid-template-columns:1fr}
+  .contact .photo{max-width:360px}
+  .demo-page{grid-template-columns:1fr}
+  .demo-photo{display:none}
+}
+@media print{ .studio,.contact .photo{display:none} }

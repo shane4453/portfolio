@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,13 +23,14 @@
 </header>
 
 <main class="demo-page">
+<div class="demo-main">
 <h1>Demos</h1>
-<p class="lead">미발매 데모입니다. 비밀번호를 받은 분만 들을 수 있습니다.</p>
+<p class="lead">Unreleased demos. Enter the password you were given.</p>
 
 <form id="gate" class="gate">
   <div class="row">
-    <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" required>
-    <button type="submit">확인</button>
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit">Enter</button>
   </div>
   <p id="msg" class="msg" aria-live="polite"></p>
 </form>
@@ -43,6 +44,8 @@
   <section class="tab" id="full" hidden><div class="list"></div></section>
 </div>
 
+</div>
+<aside class="demo-photo"><img src="img/keys.jpg" alt="Shane playing keys"></aside>
 </main>
 <footer><span>© Shane</span><span>prodshane.com</span></footer>
 
@@ -82,10 +85,10 @@ function render(items){
     const mine=items.filter(d=>d.cat===cat);
     document.querySelector(`nav.subtabs a[data-cat=${cat}] .n`).textContent=mine.length;
     const box=document.querySelector('#'+cat+' .list'); box.innerHTML='';
-    if(!mine.length){box.innerHTML='<p class="empty">데모 준비 중입니다.</p>';return}
+    if(!mine.length){box.innerHTML='<p class="empty">Coming soon.</p>';return}
     mine.forEach(d=>{
       const el=document.createElement('div'); el.className='demo';
-      el.innerHTML='<button class="play" aria-label="재생">▶</button><div class="info"><div class="t"></div><div class="m"></div></div>';
+      el.innerHTML='<button class="play" aria-label="Play">▶</button><div class="info"><div class="t"></div><div class="m"></div></div>';
       el.querySelector('.t').textContent=d.title;
       el.querySelector('.m').textContent=d.note;
       const btn=el.querySelector('.play');
@@ -115,7 +118,7 @@ function render(items){
 
 (async()=>{
   try{ MAN=await (await fetch('demos/manifest.json',{cache:'no-store'})).json() }
-  catch{ $('#msg').textContent='데모 준비 중입니다.'; $('#gate .row').hidden=true; return }
+  catch{ $('#msg').textContent='Coming soon.'; $('#gate .row').hidden=true; return }
   // 같은 탭에서 새로고침하면 다시 묻지 않는다 (탭을 닫으면 잊는다)
   try{
     const saved=sessionStorage.getItem('demoKey');
@@ -127,13 +130,13 @@ function render(items){
 $('#gate').addEventListener('submit',async e=>{
   e.preventDefault();
   if(!MAN) return;
-  const btn=$('#gate button'); btn.disabled=true; $('#msg').textContent='확인 중…';
+  const btn=$('#gate button'); btn.disabled=true; $('#msg').textContent='Checking…';
   try{
     const key=await derive($('#pw').value);
     await openWith(key);
     try{ sessionStorage.setItem('demoKey',b64(new Uint8Array(await crypto.subtle.exportKey('raw',key)))) }catch{}
   }catch{
-    $('#msg').textContent='비밀번호가 맞지 않습니다.'; $('#pw').select();
+    $('#msg').textContent='Incorrect password.'; $('#pw').select();
   }
   btn.disabled=false;
 });
