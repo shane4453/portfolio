@@ -36,6 +36,9 @@
 </form>
 
 <div id="body" hidden>
+  <p id="contact-line" class="contact-line" hidden>
+    <span>Contact</span> <a class="phone" href="#"></a> · <a href="mailto:julee209@naver.com">julee209@naver.com</a>
+  </p>
   <nav class="subtabs">
     <a href="#track" data-cat="track">Track Demo <span class="n"></span></a>
     <a href="#full" data-cat="full">Full Demo <span class="n"></span></a>
@@ -65,7 +68,15 @@ async function derive(pw){
 }
 async function openWith(key){
   const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(MAN.iv)},key,unb64(MAN.ct));
-  KEY=key; render(JSON.parse(new TextDecoder().decode(plain)));
+  KEY=key;
+  const data=JSON.parse(new TextDecoder().decode(plain));
+  // 예전 매니페스트는 곡 배열만 담고 있었다
+  const items=Array.isArray(data)?data:data.items, contact=Array.isArray(data)?{}:(data.contact||{});
+  if(contact.phone){
+    const el=$('#contact-line'); el.hidden=false;
+    const a=el.querySelector('.phone'); a.textContent=contact.phone; a.href='tel:'+contact.phone.replace(/[^0-9+]/g,'');
+  }
+  render(items);
 }
 
 // 트랙/풀 전환: 주소의 #track / #full

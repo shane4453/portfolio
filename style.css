@@ -180,3 +180,8 @@ nav.subtabs .n{font-family:var(--sans);font-size:13px;vertical-align:super;margi
   .demo-photo{display:none}
 }
 @media print{ .studio,.contact .photo{display:none} }
+
+.contact-line{margin:0 0 28px;font-size:15px}
+.contact-line span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.contact-line a{border-bottom:1px solid var(--line)}
+.contact-line a:hover{border-bottom-color:var(--fg)}

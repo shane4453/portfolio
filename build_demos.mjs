@@ -70,12 +70,16 @@ for (const e of list) {
 items.sort((a, b) => b.t - a.t);
 for (const i of items) delete i.t;
 
+// 연락처(전화번호)도 같이 잠근다 — 원본은 private/contact.json (올리지 않음)
+const CONTACT = path.join(HERE, 'private/contact.json');
+const contact = fs.existsSync(CONTACT) ? JSON.parse(fs.readFileSync(CONTACT, 'utf8')) : {};
+
 // 목록에서 빠진 곡의 잠긴 파일은 지운다
 for (const f of fs.readdirSync(ENC)) if (!used.has(f)) fs.unlinkSync(path.join(ENC, f));
 
 const iv = crypto.getRandomValues(new Uint8Array(12));
 const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key,
-  new TextEncoder().encode(JSON.stringify(items))));
+  new TextEncoder().encode(JSON.stringify({ items, contact }))));
 fs.writeFileSync(MANIFEST, JSON.stringify({ v: 1, iter: ITER, salt: b64(salt), iv: b64(iv), ct: b64(ct) }));
 fs.writeFileSync(CACHE, JSON.stringify(newCache, null, 1));
 
