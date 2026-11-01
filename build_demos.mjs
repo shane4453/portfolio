@@ -12,6 +12,7 @@ import { webcrypto as crypto } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import tty from 'node:tty';
 
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const LIST = path.join(HERE, 'private/demos_list.json');
@@ -20,8 +21,32 @@ const ENC = path.join(HERE, 'demos/enc');
 const MANIFEST = path.join(HERE, 'demos/manifest.json');
 const ITER = 600000;
 
-const pw = process.env.DEMO_PASSWORD;
-if (!pw) { console.error('DEMO_PASSWORD 가 없다'); process.exit(1); }
+// 비번은 명령줄에 적지 않는다 — 쉘이 ! $ # ( 공백 을 먼저 먹어 node 까지 가지도 못한다.
+// 환경변수가 있으면 그대로 쓰고(자동화용), 없으면 터미널에 직접 물어본다. 화면에도 히스토리에도 안 남는다.
+function askHidden (prompt) {
+  return new Promise ((res, rej) => {
+    let fd;
+    try { fd = fs.openSync ('/dev/tty', 'r'); }
+    catch { return rej (new Error ('터미널이 아니다 — DEMO_PASSWORD 로 넘겨라')); }
+    const input = new tty.ReadStream (fd);
+    process.stderr.write (prompt);
+    input.setRawMode (true);
+    let buf = '';
+    const done = v => { input.setRawMode (false); input.destroy (); process.stderr.write ('\n'); res (v); };
+    input.on ('data', d => {
+      for (const ch of d.toString ('utf8')) {
+        if (ch === '\r' || ch === '\n') return done (buf);
+        if (ch === '\u0003') { input.setRawMode (false); input.destroy (); process.exit (130); }
+        if (ch === '\u007f' || ch === '\b') { buf = buf.slice (0, -1); continue; }
+        buf += ch;
+      }
+    });
+  });
+}
+
+let pw = process.env.DEMO_PASSWORD;
+if (!pw) pw = await askHidden ('데모 비밀번호: ');
+if (!pw) { console.error ('비밀번호가 없다'); process.exit(1); }
 
 const b64 = u8 => Buffer.from(u8).toString('base64');
 const unb64 = s => new Uint8Array(Buffer.from(s, 'base64'));
@@ -41,6 +66,12 @@ if (fs.existsSync(MANIFEST) && fs.existsSync(CACHE)) {
     await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(m.iv) }, k, unb64(m.ct));
     salt = unb64(m.salt); key = k; cache = JSON.parse(fs.readFileSync(CACHE, 'utf8'));
   } catch { console.log('비밀번호가 바뀌었다 → 전부 다시 잠근다'); }
+}
+// 예전 비번과 다르면 전곡이 이 비번으로 다시 잠긴다 — 오타면 사이트가 통째로 안 열린다. 한 번 더 받는다.
+if (!key && !process.env.DEMO_PASSWORD) {
+  if (await askHidden ('예전 비번과 다르다. 새 비번으로 전부 다시 잠근다 — 한 번 더: ') !== pw) {
+    console.error ('두 번 입력이 다르다 — 아무것도 바꾸지 않았다'); process.exit (1);
+  }
 }
 if (!key) { salt = crypto.getRandomValues(new Uint8Array(16)); key = await deriveKey(salt); cache = {}; }
 
